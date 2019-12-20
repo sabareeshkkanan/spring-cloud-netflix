@@ -37,6 +37,10 @@ import static com.netflix.appinfo.InstanceInfo.PortType.SECURE;
  */
 public class EurekaServiceInstance implements ServiceInstance {
 
+	private static final String DEFAULT_SCHEME = "http";
+
+	private static final String DEFAULT_SECURE_SCHEME = "https";
+
 	private InstanceInfo instance;
 
 	public EurekaServiceInstance(InstanceInfo instance) {
@@ -85,6 +89,12 @@ public class EurekaServiceInstance implements ServiceInstance {
 	@Override
 	public Map<String, String> getMetadata() {
 		return this.instance.getMetadata();
+	}
+
+	@Override
+	public String getScheme() {
+		return isSecure() ? DEFAULT_SECURE_SCHEME : DEFAULT_SCHEME;
+
 	}
 
 }
