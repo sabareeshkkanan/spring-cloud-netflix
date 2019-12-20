@@ -58,7 +58,7 @@ import static org.springframework.util.Assert.isTrue;
  *
  * @author Daniel Lavoie
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @RestController
 @SpringBootApplication
 public class EurekaServerMockApplication {
@@ -131,10 +131,9 @@ public class EurekaServerMockApplication {
 		if ("fourOFour".equals(appName)) {
 			return new ResponseEntity(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<InstanceInfo>(new InstanceInfo(null, null, null, null,
-				null, null, null, null, null, null, null, null, null, 0, null, null, null,
-				null, null, null, null, new HashMap<>(), 0L, 0L, null, null),
-				HttpStatus.OK);
+		return new ResponseEntity<>(new InstanceInfo(null, null, null, null, null, null,
+				null, null, null, null, null, null, null, 0, null, null, null, null, null,
+				null, null, new HashMap<>(), 0L, 0L, null, null), HttpStatus.OK);
 	}
 
 	@ResponseStatus(HttpStatus.OK)
@@ -172,7 +171,7 @@ public class EurekaServerMockApplication {
 		return INFO;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	protected static class TestSecurityConfiguration
 			extends WebSecurityConfigurerAdapter {

@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ComponentScan
 @EnableAutoConfiguration
 @RestController
@@ -65,13 +65,7 @@ public class EurekaSampleApplication implements ApplicationContextAware, Closeab
 
 	@Bean
 	public HealthCheckHandler healthCheckHandler() {
-		return new HealthCheckHandler() {
-			@Override
-			public InstanceInfo.InstanceStatus getStatus(
-					InstanceInfo.InstanceStatus currentStatus) {
-				return InstanceInfo.InstanceStatus.UP;
-			}
-		};
+		return currentStatus -> InstanceInfo.InstanceStatus.UP;
 	}
 
 	@RequestMapping("/")

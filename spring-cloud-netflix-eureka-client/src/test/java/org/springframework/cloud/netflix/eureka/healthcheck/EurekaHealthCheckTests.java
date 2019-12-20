@@ -59,18 +59,13 @@ public class EurekaHealthCheckTests {
 		assertThat(status).isEqualTo(InstanceInfo.InstanceStatus.OUT_OF_SERVICE);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	protected static class EurekaHealthCheckApplication {
 
 		@Bean
 		public HealthIndicator healthIndicator() {
-			return new HealthIndicator() {
-				@Override
-				public Health health() {
-					return new Health.Builder().outOfService().build();
-				}
-			};
+			return () -> new Health.Builder().outOfService().build();
 		}
 
 	}

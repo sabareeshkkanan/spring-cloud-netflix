@@ -50,7 +50,6 @@ import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.cloud.client.CommonsClientAutoConfiguration;
 import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 import org.springframework.cloud.client.actuator.HasFeatures;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.noop.NoopDiscoveryClientAutoConfiguration;
 import org.springframework.cloud.client.serviceregistry.AutoServiceRegistrationProperties;
 import org.springframework.cloud.client.serviceregistry.ServiceRegistryAutoConfiguration;
@@ -83,12 +82,12 @@ import static org.springframework.cloud.commons.util.IdUtils.getDefaultInstanceI
  * @author Ryan Baxter
  * @author Daniel Lavoie
  * @author Olga Maciaszek-Sharma
+ * @author Tim Ysewyn
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 @ConditionalOnClass(EurekaClientConfig.class)
 @Import(DiscoveryClientOptionalArgsConfiguration.class)
-@ConditionalOnBean(EurekaDiscoveryClientConfiguration.Marker.class)
 @ConditionalOnProperty(value = "eureka.client.enabled", matchIfMissing = true)
 @ConditionalOnDiscoveryEnabled
 @AutoConfigureBefore({ NoopDiscoveryClientAutoConfiguration.class,
@@ -146,22 +145,14 @@ public class EurekaClientAutoConfiguration {
 				.parseBoolean(getProperty("eureka.instance.secure-port-enabled"));
 
 		String serverContextPath = env.getProperty("server.servlet.context-path", "/");
-		int serverPort = Integer
-				.valueOf(env.getProperty("server.port", env.getProperty("port", "8080")));
+		int serverPort = Integer.parseInt(
+				env.getProperty("server.port", env.getProperty("port", "8080")));
 
-		Integer managementPort = env.getProperty("management.server.port", Integer.class); // nullable.
-		// should
-		// be
-		// wrapped
-		// into
-		// optional
+		Integer managementPort = env.getProperty("management.server.port", Integer.class);
 		String managementContextPath = env
-				.getProperty("management.server.servlet.context-path"); // nullable.
-																		// should
-		// be wrapped into
-		// optional
+				.getProperty("management.server.servlet.context-path");
 		Integer jmxPort = env.getProperty("com.sun.management.jmxremote.port",
-				Integer.class); // nullable
+				Integer.class);
 		EurekaInstanceConfigBean instance = new EurekaInstanceConfigBean(inetUtils);
 
 		instance.setNonSecurePort(serverPort);
@@ -226,12 +217,6 @@ public class EurekaClientAutoConfiguration {
 	}
 
 	@Bean
-	public DiscoveryClient discoveryClient(EurekaClient client,
-			EurekaClientConfig clientConfig) {
-		return new EurekaDiscoveryClient(client, clientConfig);
-	}
-
-	@Bean
 	public EurekaServiceRegistry eurekaServiceRegistry() {
 		return new EurekaServiceRegistry();
 	}
@@ -261,7 +246,7 @@ public class EurekaClientAutoConfiguration {
 		return new EurekaAutoServiceRegistration(context, registry, registration);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingRefreshScope
 	protected static class EurekaClientConfiguration {
 
@@ -304,7 +289,7 @@ public class EurekaClientAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnRefreshScope
 	protected static class RefreshableEurekaClientConfiguration {
 
@@ -412,7 +397,7 @@ public class EurekaClientAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Health.class)
 	protected static class EurekaHealthIndicatorConfiguration {
 
